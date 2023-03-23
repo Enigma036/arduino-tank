@@ -2,6 +2,7 @@
 
 // Declare the Servo pin 
 int servoPin = 3; 
+int vole = 0;
 
 // Create a servo object 
 Servo Servo1; 
@@ -9,37 +10,27 @@ Servo Servo1;
 void setup() { 
    // We need to attach the servo to the used pin number 
    Servo1.attach(servoPin); 
-   Servo1.write(0); 
-   Serial.begin(38400);
+   Servo1.write(90); 
+   Serial.begin(9600);
 }
 
 void loop(){ 
-  /*if (Serial.available() > 0) {
+  
+  
+  if (Serial.available() > 0) {
     // read the incoming bytes:
-    String str = Serial.readStringUntil('\n');
-    */
+    String str = Serial.readString();
 
-    /*
-    int commaIndex = str.indexOf(' ');
-    String a = str.substring(0, commaIndex);
-    String b = str.substring(commaIndex + 1);
-    
-    int incomingByte = b.toInt();
-    if (incomingByte >= 0 && incomingByte <= 180 && a == "vez"){
-      Servo1.write(incomingByte);
-      Serial.println("Uhel:" + incomingByte);
+    if (str == "F"){
+      vole += 10;
+      Servo1.write(vole); 
     }
-    */
+    else if (str == "G"){
+      vole -= 10;
+      Servo1.write(vole); 
+    }
+    
+    }
+  
 
-  for(int i=0; i <= 180; i +=10){
-    Servo1.write(i);
-    delay(100);
-  }
-
-  for(int i=180; i >= 0; i -=10){
-    Servo1.write(i);
-    delay(100);
-  }
-
-  //}
 }
