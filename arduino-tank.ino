@@ -43,7 +43,10 @@ void setup()
   pinMode(m2b, OUTPUT);  // Digital pin 13 set as output Pin
   Serial.begin(38400);
 
-    if (!myDFPlayer.begin(mySoftwareSerial, false)) {  //Use softwareSerial to communicate with mp3.
+  pinMode(front_led, OUTPUT);
+  pinMode(back_led, OUTPUT);
+
+  if (!myDFPlayer.begin(mySoftwareSerial, false)) {  //Use softwareSerial to communicate with mp3.
       Serial.println(F("Unable to begin:"));
       Serial.println(F("1.Please recheck the connection!"));
       Serial.println(F("2.Please insert the SD card!"));
@@ -53,6 +56,8 @@ void setup()
   }
   Serial.println(F("DFPlayer Mini je online."));
   myDFPlayer.volume(20); 
+
+  digitalWrite(front_led, HIGH);
 }
 
 void loop()
@@ -66,6 +71,7 @@ void loop()
     TurretMovement(value);  
     CanonMovement(value);
     MusicPlayer(value);
+    Diods(value);
   
   }
 }
@@ -107,6 +113,25 @@ void TurretMovement(String val){
 
     if (int_value >= 0 && int_value <= 180 && prvni == "tur"){
       ServoVez.write(int_value);
+    }
+}
+
+void Diods(String val){
+    if (val == "lf"){
+      if(digitalRead(front_led)){
+        digitalWrite(front_led, LOW);
+      }
+      else{
+        digitalWrite(front_led, HIGH);
+      }
+    }
+    else if (val == "lb"){
+      if(digitalRead(back_led)){
+        digitalWrite(back_led, LOW);
+      }
+      else{
+        digitalWrite(back_led, HIGH);
+      }
     }
 }
 
