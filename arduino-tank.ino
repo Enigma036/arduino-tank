@@ -56,8 +56,8 @@ void setup()
   }
   Serial.println(F("DFPlayer Mini je online."));
   myDFPlayer.volume(20); 
+  ServoKanon.write(40);
 
-  digitalWrite(front_led, HIGH);
 }
 
 void loop()
