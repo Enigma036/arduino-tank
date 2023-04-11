@@ -1,4 +1,10 @@
 #include <Servo.h> 
+#include "Arduino.h"
+#include "SoftwareSerial.h"
+#include "DFRobotDFPlayerMini.h"
+
+SoftwareSerial mySoftwareSerial(10, 8); // RX, TX
+DFRobotDFPlayerMini myDFPlayer;
 
 // Piny
 int servo_vez = 6; // Servo věž
@@ -26,6 +32,7 @@ String value;
 
 void setup() 
 {  
+  mySoftwareSerial.begin(9600);
 
   ServoVez.attach(servo_vez);  // Nastavení prvního serva
   ServoKanon.attach(kanon_vez); // Nastavení druhého serva
@@ -34,8 +41,18 @@ void setup()
   pinMode(m1b, OUTPUT);  // Digital pin 11 set as output Pin
   pinMode(m2a, OUTPUT);  // Digital pin 12 set as output Pin
   pinMode(m2b, OUTPUT);  // Digital pin 13 set as output Pin
+  Serial.begin(38400);
 
-  Serial.begin(9600);
+    if (!myDFPlayer.begin(mySoftwareSerial, false)) {  //Use softwareSerial to communicate with mp3.
+      Serial.println(F("Unable to begin:"));
+      Serial.println(F("1.Please recheck the connection!"));
+      Serial.println(F("2.Please insert the SD card!"));
+      while(true){
+        delay(0); // Code to compatible with ESP8266 watch dog.
+      }
+  }
+  Serial.println(F("DFPlayer Mini je online."));
+  myDFPlayer.volume(20); 
 }
 
 void loop()
@@ -46,12 +63,41 @@ void loop()
     Serial.println(value);
     
     Movement(value);
-
+    TurretMovement(value);  
+    CanonMovement(value);
+    MusicPlayer(value);
   
   }
 }
 
+void MusicPlayer(String val){  
 
+  static unsigned long timer = millis();
+
+  int commaIndex = val.indexOf(' ');
+  String prvni = val.substring(0, commaIndex);
+  String druhy = val.substring(commaIndex + 1);
+  int int_value = druhy.toInt();
+
+  if (int_value == 1 && prvni == "mp"){
+    Serial.print("Hraji první song");
+    myDFPlayer.play(1);
+    delay(100);
+  }
+
+  else if(int_value == 2 && prvni == "mp"){
+    myDFPlayer.play(2);
+  }
+
+  else if(int_value == 3 && prvni == "mp"){
+    myDFPlayer.play(3);
+  }
+
+  else if(val == "mp s"){
+    myDFPlayer.stop();
+  }
+    
+}
 
 void TurretMovement(String val){
     int commaIndex = val.indexOf(' ');
@@ -59,12 +105,21 @@ void TurretMovement(String val){
     String druhy = val.substring(commaIndex + 1);
     int int_value = druhy.toInt();
 
-    if (int_value >= 0 && int_value <= 180 && prvni == "vez"){
+    if (int_value >= 0 && int_value <= 180 && prvni == "tur"){
       ServoVez.write(int_value);
-      Serial.println("Uhel:" + int_value);
     }
 }
 
+void CanonMovement(String val){
+    int commaIndex = val.indexOf(' ');
+    String prvni = val.substring(0, commaIndex);
+    String druhy = val.substring(commaIndex + 1);
+    int int_value = druhy.toInt();
+
+    if (int_value >= 30 && int_value <= 90 && prvni == "bar"){
+      ServoKanon.write(int_value);
+    }
+}
 
 void Movement(String val){
   if( val == "fw") // Forward
