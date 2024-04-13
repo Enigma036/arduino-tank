@@ -1,2 +1,2 @@
 # Arduino-tank
-Arduino kód pro ročníkovou práci - TANK, který se dá ovládat pomocí Bluetooth.
+Arduino code for a term project - TANK, which can be controlled via Bluetooth.
